@@ -127,6 +127,7 @@ pandas                    2.2.2           py310h6d0c2b6_0
 pandocfilters             1.5.0              pyhd3eb1b0_0  
 parso                     0.8.3              pyhd3eb1b0_0  
 pathspec                  0.12.1             pyhd8ed1ab_0    conda-forge
+patsy                     0.5.6              pyhd8ed1ab_0    conda-forge
 pcre2                     10.42                h9b97e30_1  
 pexpect                   4.8.0              pyhd3eb1b0_3  
 pillow                    10.4.0          py310h46256e1_0  
@@ -168,6 +169,8 @@ rfc3339-validator         0.1.4           py310hecd8cb5_0
 rfc3986-validator         0.1.1           py310hecd8cb5_0  
 rpds-py                   0.10.6          py310hf2ad997_0  
 scipy                     1.10.1          py310h3900cf1_3    conda-forge
+seaborn                   0.13.2               hd8ed1ab_2    conda-forge
+seaborn-base              0.13.2             pyhd8ed1ab_2    conda-forge
 send2trash                1.8.2           py310hecd8cb5_0  
 setuptools                72.1.0          py310hecd8cb5_0  
 sip                       6.7.12          py310hcec6c5f_0  
@@ -178,6 +181,7 @@ soupsieve                 2.5             py310hecd8cb5_0
 spotipy                   2.23.0             pyhd8ed1ab_0    conda-forge
 sqlite                    3.45.3               h6c40b1e_0  
 stack_data                0.2.0              pyhd3eb1b0_0  
+statsmodels               0.14.2          py310hde789be_0    conda-forge
 tbb                       2021.8.0             ha357a0b_0  
 terminado                 0.17.1          py310hecd8cb5_0  
 tinycss2                  1.2.1           py310hecd8cb5_0  

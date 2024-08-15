@@ -13,7 +13,6 @@ from itertools import cycle
 import tkinter as tk 
 from tkinter import *
 import tkinter.ttk as ttk
-from PIL import ImageTk, Image
 from tkinter import font
 import customtkinter 
 import webbrowser

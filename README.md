@@ -1,5 +1,6 @@
 # Spotify Playlist Suggestions 
 ### Adrianna High, Austin Eck, and Yousra Zouani
+# Documentation updated Aug 15, 2024
 
 ## About the Project 
 

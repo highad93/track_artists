@@ -20,6 +20,8 @@ Or...
 
 `pip install -r requirements.txt`
 
+3. *Optional*  Recreate the data by running `from_playlistfile.py` then `Artist_ID_Genre.ipynb`.
+
 3. Rename `hidden_sample.py` as `hidden.py`. 
 
 4. Add your Spotify and Open AI credentials in the appropriate places. 

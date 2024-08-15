@@ -1,5 +1,6 @@
 # Spotify Playlist Suggestions 
 ### Adrianna High, Austin Eck, and Yousra Zouani
+# Documentation updated Aug 15, 2024
 
 ## About the Project 
 
@@ -27,7 +28,7 @@ Or...
 4. Add your Spotify and Open AI credentials in the appropriate places. 
 5. Run the application by running `build_gui_final.py`
 
-`python build_gui_final.py`
+`python build_gui.py`
 
 ### Data Access Statement 
 

@@ -4,67 +4,38 @@ Created on Fri Aug  2 14:32:09 2024
 
 @author: ahigh
 """
-import os
 
-os.getcwd()  
-os.chdir(r"C:\Users\ahigh\OneDrive\Desktop\milestoneII")
-
-
-from hidden_ah import CLIENT_ID, CLIENT_SECRET, SPOTIPY_REDIRECT
-import json
-import math
-import pandas as pd
-import os
-import numpy as np
-from datetime import datetime
-import string
-from bs4 import BeautifulSoup as bsoup
-import re
-import time
-import pickle
-import requests
-import altair as alt
-import matplotlib as plt
-import seaborn as sns
-import statsmodels as sm
-import sys
-import urllib.request as urllib2
-import string
-import http.client
-import requests
-import os
-from bs4 import BeautifulSoup as bsoup
+# Import modules
+from hidden import CLIENT_ID, CLIENT_SECRET, SPOTIPY_REDIRECT
 import pandas as pd
 import time
 from itertools import cycle
-from sklearn.preprocessing import StandardScaler
 import tkinter as tk 
 from tkinter import *
 import tkinter.ttk as ttk
-from PIL import ImageTk, Image
 from tkinter import font
 import customtkinter 
 import webbrowser
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-# Read in original file with audio features for songs
-songs_df = pd.read_csv("https://raw.githubusercontent.com/aeckumich/siads696_M2/main/data/complete_dataset.csv")
+
+# Read in vibes playlist
+df = pd.read_csv("https://raw.githubusercontent.com/highad93/track_artists/main/song_vibes.csv").drop(['Unnamed: 0'], axis=1)
+
+# Sortvalues by selected vibe variable
+df = df.sort_values(by='vibe2') # To create list in alphabetic order
+
+# Check counts of song per vibe
+vibe_counts = df['vibe2'].value_counts(dropna=False)
 
 
-# Read in vibes df by playlist
-vibes_df = pd.read_csv("https://raw.githubusercontent.com/highad93/track_artists/main/playlist_vibes.csv")
-#vibes_df = pd.read_csv("https://raw.githubusercontent.com/highad93/track_artists/main/song_vibes.csv")
-
-# Merge together on playlist id - now each song is associated with a vibe
-df = pd.merge(songs_df, vibes_df, how='left', on='playlist_id')
-df = df.sort_values(by='vibe1') # To create list in alphabetic order
-
-#Now we build the GUI to make song selection
-#Create root/window
+# Now we build the GUI to make song selection
+# Create root/window
 root = tk.Tk()
 root.title("Create your playlist here!")
 root.geometry("800x1000")
+
 
 # Add widgets to root
 
@@ -90,7 +61,7 @@ duration_selection = tk.StringVar()
 spotify_add_selection = tk.StringVar()
 
 # Create a dropdown menu with options for vibe
-vibe_options = list(df['vibe1'].unique())
+vibe_options = list(df['vibe2'].unique())
 vibe_dropdown = tk.OptionMenu(root, vibe_selection, *vibe_options)
 vibe_dropdown.config(font=['Arial',16])
 vibe_dropdown.pack()
@@ -107,7 +78,7 @@ duration_dropdown.config(font=['Arial',16])
 duration_dropdown.pack()
 
 
-# Create generate playlist button - need to create a function for what happens when button is clicked
+
 
 duration_dict = {"30 minutes": 35, 
                     "60 minutes" : 65,
@@ -116,38 +87,42 @@ duration_dict = {"30 minutes": 35,
                     "150 minutes" :155,
                     "180 minutes" :185}
 
+# This is the generate playlist button
 def click_button():
     
-    playlist_name = entry.get()
+    playlist_name = entry.get() #Get playlist name from user entry
     my_label.config(text='generating ' + entry.get() + ' playlist......', font=['Arial',11])
     your_playlist.config(text= entry.get() , font=['Arial',16])
     print(playlist_name)
     
+    # Filter by vibe selection
     selected_vibe_df = df[df['vibe1']==vibe_selection.get()]
+    
+    # Get the duration of all songs with that vibe in minutes (duration is in millisecond)
     total_duration = (selected_vibe_df['duration'].sum() / 60000)
     print( selected_vibe_df)
     print(total_duration)
     
-    #remove songs until duration is less than or equal to selected suration
     
-
     
+    # If the total duration of a selected vibe is less than the selected duration, alert user
     if total_duration < duration_dict[duration_selection.get()]:
         sorry.config(text = 'sorry there are not enough songs to fulfill request, select a shorter duration')
         print ('sorry there are not enough songs to fulfill request, select a shorter duration')
     
     else:
         sorry.config(text="")
+        # Remove songs until duration is less than or equal to selected suration
         while total_duration >= duration_dict[duration_selection.get()]:
-            remove =  selected_vibe_df.sample(n=1) # randomly select 1 song
+            remove =  selected_vibe_df.sample(n=1) # Randomly select 1 song
             selected_vibe_df = selected_vibe_df.drop(remove.index)
-            total_duration = (selected_vibe_df['duration'].sum() / 60000)
+            total_duration = (selected_vibe_df['duration'].sum() / 60000) #Recalculate total duration
         #print(selected_vibe_df, total_duration)
         selected_songs = list(zip(selected_vibe_df['track_name'], selected_vibe_df['artist_name']))
         selected_song_ids = list((selected_vibe_df['song_id']))
         print(selected_song_ids)
         
-        # clear items if button is clicked more than one
+        # Clear items if button is clicked more than once
         for item in your_songs.get_children():
             your_songs.delete(item)
         
@@ -156,9 +131,11 @@ def click_button():
         iid1 = 0
         for song in selected_songs:
             #print(song)
+            # Insert songs into treeview for display
             your_songs.insert(parent='', index='end', iid = iid , values = song)
             iid +=1
         for song_id in selected_song_ids:
+            # Insert songs into secondary treeview for Spotify connection
             song_ids.insert(parent='', index='end', iid = iid1 , values = song_id)
             iid1 +=1
         your_songs.pack() 
@@ -170,9 +147,8 @@ def click_button():
         
     
  
-# Create generat button
+# Create generate playlist button - upon click "click_button" function will run
 button = tk.Button(root, text="Generate Playlist!", command=click_button)
-#selected_song_ids = click_button()
 button.config(font = ['Arial',16])
 button.pack(pady=5)
 
@@ -195,10 +171,10 @@ sorry.pack()
 your_songs = ttk.Treeview(root)
 
 
-#Define columns of tree
+# Define columns of tree
 your_songs['columns'] = ('TRACK NAME', 'ARTIST')
 
-# FORMAT
+# Format treeview
 your_songs.column("#0", width=0, stretch=NO )
 your_songs.column("TRACK NAME", width=150, anchor =W)
 your_songs.column("ARTIST", width=150, anchor=CENTER)
@@ -207,7 +183,7 @@ your_songs.heading("TRACK NAME", text='Track Name', anchor = W)
 your_songs.heading("ARTIST", text= 'Artist Name', anchor=W)
 
 
-# Treeview for song ids
+# Treeview for song ids - this won't actually be displayed
 song_ids = ttk.Treeview(root)
 song_ids['columns'] = ("SONG_ID")
 song_ids.column("#0", width = 0, stretch=NO)
@@ -226,7 +202,6 @@ spotify_add_label = tk.Label(root, text="Do you want to add playlist to your spo
 spotify_add_label.config(font=['Arial', 16]) # Adjust font and size of label
 
 # Create dropdown for adding songs to spotify
-
 spotify_add_options = ["Yes, this is lit!", "No, this is trash!"]
 spotify_add_dropdown = tk.OptionMenu(root, spotify_add_selection, *spotify_add_options)
 spotify_add_dropdown.config(font=['Arial',16])
@@ -237,22 +212,14 @@ spotify_user_label = tk.Label(root, text="Enter your spotify user id:")
 spotify_user_label.config(font=['Arial', 16]) # Adjust font and size of label
 
 
-# Create field for user entry
+# Create field for user entry for Spotify id
 entry1 = Entry()
 entry1.config(font=['Ink Free', 16])
 
 
+# User satisfaction button - if user likes playlist prompt for user id, if not clear the playlist 
 def new_window():
     if spotify_add_selection.get() == 'Yes, this is lit!':
-        #win = customtkinter.CTkToplevel()
-        
-        #win.title("Enter your spotify credentials")
-        #win.geometry("400x400")
-       
-        #label1 = ttk.Label(win, text='Enter your spotify user id:').grid(row = 0, column = 0, sticky = W, pady = 2 ,padx = 2)
-        #label1.config(font=['Ink Free', 18])
-        #entry1 = ttk.Entry(win).grid(row = 0, column = 1)
-        #entry1.config(font=['Ink Free', 18])
         spotify_user_label.pack()
         entry1.pack()
         spotify_button1.pack()
@@ -265,42 +232,52 @@ def new_window():
         #win.mainloop()
         print('yup!')
 
-if spotify_add_selection.get() == 'Yes, this is lit!':
-    print("do somthing")
 # Create go button
-
 spotify_button = tk.Button(root, text="Gooo!", command=new_window)
 spotify_button.config(font = ['Arial',16] )
 
-
+# This function collects the users Spotify ID, create their new playlist and add tracks to the playlist
 def add_to_spotify():
     scope = "playlist-modify-public"
     username = entry1.get()
     print (username)
-    token = SpotifyOAuth(client_id = CLIENT_ID, client_secret= CLIENT_SECRET, redirect_uri=SPOTIPY_REDIRECT, 
-                         scope=scope, username=username)
-    spotifyObject = spotipy.Spotify(auth_manager= token)
-    spotifyObject.user_playlist_create(user=username, name= entry.get(), public = True, description = "descrip")
-    
-    preplaylist = spotifyObject.user_playlists(user=username)
-    playlist = preplaylist['items'][0]['id']
-    list_of_song_ids = []
-    for line in song_ids.get_children():
-        print (line)
-        for value in song_ids.item(line)['values']:
-            print(value) 
-            list_of_song_ids.append(value)
-    
-    spotifyObject.user_playlist_add_tracks(user=username, playlist_id = playlist, tracks = list_of_song_ids)
-    webbrowser.open( 'https://open.spotify.com/playlist/{}'.format(playlist))
+    try:
+        sorry1.config(text="redirecting  to your spotify playlist")
+        sorry1.pack()
+        # Generate access token
+        token = SpotifyOAuth(client_id = CLIENT_ID, client_secret= CLIENT_SECRET, redirect_uri=SPOTIPY_REDIRECT, 
+                             scope=scope, username=username)
+        # Define Spotify Object
+        spotifyObject = spotipy.Spotify(auth_manager= token)
+        # Create playlist
+        spotifyObject.user_playlist_create(user=username, name= entry.get(), public = True, description = "")
+        preplaylist = spotifyObject.user_playlists(user=username)
+        playlist = preplaylist['items'][0]['id']
+        list_of_song_ids = []
+        for line in song_ids.get_children():
+            print (line)
+            for value in song_ids.item(line)['values']:
+                print(value) 
+                list_of_song_ids.append(value)
+        # Add tracks to playlist    
+        spotifyObject.user_playlist_add_tracks(user=username, playlist_id = playlist, tracks = list_of_song_ids)
+        # Open playlist in browser
+        webbrowser.open( 'https://open.spotify.com/playlist/{}'.format(playlist))
+    except:
+        # If invalid user id is entered
+        sorry1.config(text='is that really your username? try again')
+        sorry1.pack() 
     return None
 
+# Create final add to spotify button
 spotify_button1 = tk.Button(root, text="ADD TO MY SPOTIFY ACCOUNT", command=add_to_spotify)
 spotify_button1.config(font = ['Arial',16] )
 
- 
+# Error message, adjust selections
+sorry1 = Label(root, text="")
 
 
+# Run/open Gui 
 root.mainloop()
 
 

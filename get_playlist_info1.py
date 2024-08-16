@@ -4,13 +4,8 @@ Created on Mon Jun  3 10:38:25 2024
 
 @author: ahigh
 """
-import os
 
-os.getcwd()  
-os.chdir(r"C:\Users\ahigh\OneDrive\Desktop\milestoneII")
-
-
-from hidden_ah import CLIENT_ID, CLIENT_SECRET
+from hidden import CLIENT_ID, CLIENT_SECRET
 import requests
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -23,6 +18,7 @@ import time
 
 df = pd.read_csv("https://raw.githubusercontent.com/highad93/track_artists/main/datawithgenres.csv").drop(['Unnamed: 0'], axis=1)
 
+# Create list of unique playlist ids
 playlist_lst = list(df['playlist_id'].unique())
 
 

@@ -250,6 +250,7 @@ def add_to_spotify():
         # Define Spotify Object
         spotifyObject = spotipy.Spotify(auth_manager= token)
         # Create playlist
+        # Much of this code was borrowed from Kalyan Codes Youtube: https://www.youtube.com/watch?v=jSOrEmKUd_c
         spotifyObject.user_playlist_create(user=username, name= entry.get(), public = True, description = "")
         preplaylist = spotifyObject.user_playlists(user=username)
         playlist = preplaylist['items'][0]['id']

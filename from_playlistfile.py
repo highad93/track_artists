@@ -152,4 +152,4 @@ def main(fname: str = "songs.csv", i:int = 0):
 
 
 if __name__ == "__main__":
-    main("fname.csv")
+    main("complete_dataset.csv")
